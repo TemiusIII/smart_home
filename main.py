@@ -5,7 +5,7 @@ import serial.tools.list_ports
 import os
 import time
 
-debug = False
+debug = True
 
 config = json.load(open('config.json', 'r', encoding='windows-1251'))
 
@@ -14,7 +14,7 @@ if debug:
     new_port = input('\nChoose your port\n')
     config['port'] = new_port
     write_file = open('config.json', 'w')
-    json.dump(config, write_file, ensure_ascii=False)
+    json.dump(config, write_file)
     write_file.close()
 
 ArduinoUnoSerial = serial.Serial(config['port'], 9600)
