@@ -12,6 +12,7 @@ else:
     ArduinoUnoSerial = serial.Serial('/dev/cu.usbmodem141401', 9600)
 r = sr.Recognizer()
 
+
 while 1:
     with sr.Microphone(0) as source:
         audio = r.listen(source)
