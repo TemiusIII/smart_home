@@ -1,14 +1,17 @@
 import serial
 import speech_recognition as sr
 import json
+import serial.tools.list_ports
+import os
 
 debug = False
-
-conf =
-
-ArduinoUnoSerial = serial.Serial('/dev/cu.usbmodem141401', 9600)
-
+if debug:
+    print(os.system('python3 -m serial.tools.list_ports'))
+    ArduinoUnoSerial = serial.Serial(input('Ur port: '), 9600)
+else:
+    ArduinoUnoSerial = serial.Serial('/dev/cu.usbmodem141401', 9600)
 r = sr.Recognizer()
+
 while 1:
     with sr.Microphone(0) as source:
         audio = r.listen(source)
