@@ -1,3 +1,5 @@
-/venv
+/venv/Scripts
+/venv/.gitignore
+/venv/pyvenv.cfg
 *.xml
 *.iml
