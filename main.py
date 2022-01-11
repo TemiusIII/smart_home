@@ -1,10 +1,12 @@
 import serial
 import speech_recognition as sr
+import json
 
-# pip install pyaudio
+debug = False
 
-ArduinoUnoSerial = serial.Serial('/dev/cu.usbmodem141401', 9600)  # wait for 2 secounds for the communication to get established
-comms = {'включи': 'on\r', 'выключи': 'off\r'}
+conf =
+
+ArduinoUnoSerial = serial.Serial('/dev/cu.usbmodem141401', 9600)
 
 r = sr.Recognizer()
 while 1:
@@ -12,15 +14,14 @@ while 1:
         audio = r.listen(source)
         try:
             text = r.recognize_google(audio, language='ru-ru')
-            print(text)
+            if debug:
+                print(text)
             text = str(text).lower()
-            print(text)
-            # print(text)
 
             if text in comms.keys():
                 ArduinoUnoSerial.write(comms[text].encode('utf-8'))
             else:
-                print('No such a command')
+                print('No such command')
         except:
             pass
 while 1:
