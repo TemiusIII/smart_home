@@ -27,44 +27,50 @@ commands = config['commands']
 if debug:
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source, 1)
-        print("Listening....")
+        if debug:
+            print("Listening....")
         audio = r.listen(source)
 
         try:
-            print("Recognizing...")
+            if debug:
+                print("Recognizing...")
             query = r.recognize_google(audio, language='ru-ru')
-            print(f"You said: {query}\n ")
+            if debug:
+                print(f"You said: {query}\n ")
 
         except sr.UnknownValueError:
-            print("Could not hear that, Try saying again")
+            if debug:
+                print("Could not hear that, Try saying again")
 
         except sr.RequestError:
-            print("Make Sure that you have a good Internet connection")
+            if debug:
+                print("Make Sure that you have a good Internet connection")
 
 if debug:
     print(commands)
-
-print('Main part begins')
+    print('Main part begins')
 while 1:
     with sr.Microphone() as source:
         audio = r.listen(source)
         try:
             text = r.recognize_google(audio, language='ru-ru')
-            # тут кароче можно накидать функций для фильтрации шума и времени на слово, надо разобраться короче
-            print(text)
-            text = str(text).lower()
-
-            if text in commands.keys():
-                comm = commands[text] + '\r'
-                ArduinoUnoSerial.write(comm.encode('ascii'))
-                ans = ''
-                temppp = ''
-                while temppp != b'\r':
-                    temppp = ArduinoUnoSerial.read()
-                    ans += temppp
-                print(temppp)
+            if not commands['name'] in text:
+                pass
             else:
-                print('No such command')
+                print(text)
+                text = str(text).lower()
+
+                if text in commands.keys():
+                    comm = commands[text] + '\r'
+                    ArduinoUnoSerial.write(comm.encode('ascii'))
+                    ans = ''
+                    temppp = ''
+                    while temppp != b'\r':
+                        temppp = ArduinoUnoSerial.read()
+                        ans += temppp
+                    print(temppp)
+                else:
+                    print('No such command')
         except:
             pass
 

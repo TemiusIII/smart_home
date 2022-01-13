@@ -1,1 +1,1 @@
-{"commands": {"\u0432\u043a\u043b\u044e\u0447\u0438": "on", "\u0432\u044b\u043a\u043b\u044e\u0447\u0438": "off"}, "port": "COM5"}
+{"commands": {"\u0432\u043a\u043b\u044e\u0447\u0438": "on", "\u0432\u044b\u043a\u043b\u044e\u0447\u0438": "off"}, "port": "/dev/cu.usbserial-1120", "name": "тёма"}
