@@ -25,6 +25,7 @@ if debug:
 ArduinoUnoSerial = serial.Serial(config['port'], 9600)
 r = sr.Recognizer()
 
+
 commands = config['commands']
 
 if debug:
