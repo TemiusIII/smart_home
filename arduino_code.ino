@@ -21,8 +21,8 @@ void loop() {
      }
     
   }
-  if (command == "111110")
+  if (command == "on")
     digitalWrite (LED, HIGH);
-  else if (command == "111102102")
+  else if (command == "off")
     digitalWrite (LED, LOW);
 }
