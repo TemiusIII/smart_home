@@ -1,4 +1,6 @@
+import datetime
 import json
+import random
 import webbrowser
 from googlesearch import search
 from gtts import gTTS
@@ -10,6 +12,10 @@ import json
 import re
 from youtube_search import YoutubeSearch
 from pytube import YouTube
+from bs4 import BeautifulSoup
+import requests
+
+name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем']
 
 def urtts(text, lang='ru'):
     myobj = gTTS(text=text, lang=lang)
@@ -80,16 +86,53 @@ while 1:
             if debug:
                 print(text)
             text = str(text).lower()
+            if "спасибо" in text:
+                urtts("всегда пожалуйста")
             #print(config["name"])
-            if "тёма" in str(text) or "сёма" in str(text) or 'тём' in str(text) or 'тема':
-                #print('Ты сказал мое имя!')
-                #if text == config['name'] or str(config['name']).replace('ё', 'е'):
-                #    urtts('Не понял вашей команды, вы только сказали мое имя!')
-                #else:
-                #if "включи" in text or "поставь" in text or "открой" in text or "включить":
-                    text = str(text).split()
-                    cter = 0
-                    for i in range(len(text)):
+            for i in name_list:
+                for word in text.split():
+                    if i == word:
+                        if "тупой" in text or "глупый" in text or "дебил" in text:
+                            urtts("все притэнзии к саше")
+                        #print(Fore.RED + "Сказали мое имя!")
+                        if "спокойной ночи" in text:
+                            urtts("Сладких снов!")
+                        if "пока" in text or "давай" in text:
+                            time_now = str(datetime.datetime.now().time()).split(".")[0]
+                            if int(time_now.split(':')[0]) >= 22:
+                                urtts("СПАТЬ ИДИ!")
+                                exit(0)
+                            else:
+                                a = random.randint(1, 8)
+                                if a == 1:
+                                    urtts("Хорошо, пока!")
+                                elif a == 2:
+                                    urtts("Окей, пока!")
+                                elif a == 3:
+                                    urtts("Давай")
+                                elif a == 4:
+                                    urtts("До свидания!")
+                                elif a == 5:
+                                    urtts("И тебе того-же!")
+                                elif a == 6:
+                                    urtts("До скорой встречи!")
+                                elif a == 7:
+                                    urtts("До скорого!")
+                                elif a == 8:
+                                    urtts("Было приятно пообщаться")
+                                exit(0)
+                        text = str(text).split()
+                        cter = 0
+                        if "время" in text or 'времени' in text:
+                            time_now = str(datetime.datetime.now().time()).split(".")[0]
+                            a = random.randint(1, 2)
+                            if a == 1:
+                                urtts("сейчас " + time_now)
+                            elif a == 2:
+                                urtts(time_now)
+                            if int(time_now.split(':')[0]) > 21:
+                                urtts("ПОРА СПАТЬ!!!")
+                        for i in range(len(text)):
                             if text[i] == 'открой':
                                 cter = i + 1
                                 name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace(
@@ -100,9 +143,10 @@ while 1:
                                 print(srch)
                                 webbrowser.open(str(srch))
 
-                            elif text[i] == 'включи':
+                            if text[i] == 'включи':
                                 cter = i + 1
-                                name_of_something = str(text[i+1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '')
+                                name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace(
+                                    "']", "").replace("Тёма", '')
                                 print("после i: " + name_of_something)
                                 url = str(json.loads(
                                     YoutubeSearch(name_of_something, max_results=1).to_json()))
@@ -114,36 +158,56 @@ while 1:
                                 print(index)
                                 # print(url)
                                 webbrowser.open("https://www.youtube.com/watch?v=" + str(index))
-
-                            else:
-                                if text[i] == 'поставь':
-                                    cter = i + 1
-                                    name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '')
-                                    print("после i: " + name_of_something)
-                                    url = str(json.loads(YoutubeSearch(name_of_something + " official song", max_results=1).to_json()))
-                                    print('URL = ' + url)
-                                    yatoobe = YouTube(url)
-                                    print("yatoobe = " + str(yatoobe))
-                                    vid = yatoobe.streams.filter(only_audio=True).first()
-                                    out_file = vid.download(
-                                        output_path='/Users/alexsukhotckii/PycharmProjects/MineIsTop')
-                                    base, ext = os.path.splitext(out_file)
-                                    os.rename(out_file, "песня.mp3")
-                                    playsound("песня.mp3")
-                    if text in commands.keys():
-                        # comm = commands[text] + '\r'
-                        # ArduinoUnoSerial.write(comm.encode('ascii'))
-                        # ans = ''
-                        # temppp = ''
-                        # while temppp != b'\r':
-                        #     temppp = ArduinoUnoSerial.read()
-                        #     ans += temppp
-                        # print(temppp)
-                        pass
-                    else:
-                        if debug:
-                            print('No such command')
-                        urtts('Не понял вашей команды, попробуйте ещё раз!')
-
+                            if text[i] == 'акции' or text[i] == 'акции':
+                                cter = i + 1
+                                name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '').lower()
+                                print("после i: " + name_of_something)
+                                name = name_of_something
+                                html = requests.get(
+                                    f"https://www.google.com/search?q=акции+{name}&ei=QCHtYZ6JG9KHwPAPnf2-4A4&ved=0ahUKEwieqYaFycf1AhXSAxAIHZ2-D-wQ4dUDCA4&uact=5&oq=акции+{name}&gs_lcp=Cgdnd3Mtd2l6EAMyCAgAEIAEELEDMgUIABCABDIECAAQQzIFCAAQgAQyBAgAEEMyCAgAEIAEEMkDMggIABCABBCxAzIFCAAQgAQyBQgAEIAEMgUIABCABDoHCAAQRxCwAzoKCAAQRxCwAxDJAzoHCAAQsAMQQzoKCAAQ5AIQsAMYADoSCC4QxwEQ0QMQyAMQsAMQQxgBOgwILhDIAxCwAxBDGAE6EgguEMcBEKMCEMgDELADEEMYAUoECEEYAEoECEYYAVCCAlinBGCcB2gBcAJ4AIABVYgBmQGSAQEymAEAoAEByAESwAEB2gEGCAAQARgJ2gEGCAEQARgI&sclient=gws-wiz").text
+                                soup = BeautifulSoup(html, 'html.parser')
+                                find_text = soup.find('div', {'class': 'BNeawe iBp4i AP7Wnd'}).get_text()
+                                # print(soup)
+                                print(find_text)
+                                urtts("На данный момент, акции " +
+                                      soup.find('div', {'class': 'BNeawe vvjwJb AP7Wnd'}).get_text().split()[2] + " " +
+                                      find_text.split()[0])
+                                if '-' in find_text.split()[1]:
+                                    urtts("Они опустились за сегодня на " + find_text.split()[1].replace('-', ''))
+                                else:
+                                    urtts("Они повысились за сегодня на " + find_text.split()[1])
+                                urtts("Это " + find_text.split()[2].replace('(', '').replace(")", '') + "процентов")
+                            if text[i] == 'поставь':
+                                cter = i + 1
+                                name_of_something = str(text[i + 1:]).replace("['", '').replace("', '",
+                                                                                                ' ').replace("']",
+                                                                                                             "").replace(
+                                    "Тёма", '')
+                                print("после i: " + name_of_something)
+                                url = str(json.loads(
+                                    YoutubeSearch(name_of_something + " official song", max_results=1).to_json()))
+                                print('URL = ' + url)
+                                yatoobe = YouTube(url)
+                                print("yatoobe = " + str(yatoobe))
+                                vid = yatoobe.streams.filter(only_audio=True).first()
+                                out_file = vid.download(
+                                    output_path='/Users/alexsukhotckii/PycharmProjects/MineIsTop')
+                                base, ext = os.path.splitext(out_file)
+                                os.rename(out_file, "song.mp3")
+                                playsound("song.mp3")
+                        if text in commands.keys():
+                            # comm = commands[text] + '\r'
+                            # ArduinoUnoSerial.write(comm.encode('ascii'))
+                            # ans = ''
+                            # temppp = ''
+                            # while temppp != b'\r':
+                            #     temppp = ArduinoUnoSerial.read()
+                            #     ans += temppp
+                            # print(temppp)
+                            pass
+                        else:
+                            if debug:
+                                print('No such command')
+                            urtts('Не понял вашей команды, попробуйте ещё раз!')
         except:
             pass
