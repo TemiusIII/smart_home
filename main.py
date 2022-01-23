@@ -12,7 +12,7 @@ def urtts(text, lang='ru'):
     playsound('tts_file.mp3')
 
 
-debug = True
+debug = False
 config = json.load(open('config.json', 'r', encoding='windows-1251'))
 
 if debug:
