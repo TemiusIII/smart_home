@@ -2,7 +2,7 @@ from playsound import playsound
 from gtts import gTTS
 import os
 
-texts = 'я помню пенис большой, помню как он сильно входил мне в жопу, помню как текла кровь'
+texts = 'Саша пидор'
 
 def urtts(text, lang='ru'):
     if 'tts.mp3' in os.listdir():

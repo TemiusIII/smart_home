@@ -104,7 +104,7 @@ while 1:
                             time_now = str(datetime.datetime.now().time()).split(".")[0]
                             if int(time_now.split(':')[0]) >= 22:
                                 urtts("СПАТЬ ИДИ!")
-                                exit(0)
+
                             else:
                                 a = random.randint(1, 8)
                                 if a == 1:
@@ -123,7 +123,7 @@ while 1:
                                     urtts("До скорого!")
                                 elif a == 8:
                                     urtts("Было приятно пообщаться")
-                                exit(0)
+
                         text = str(text).split()
                         cter = 0
                         if "время" in text or 'времени' in text:
