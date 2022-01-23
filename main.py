@@ -17,7 +17,10 @@ import requests
 
 name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем']
 
+
 def urtts(text, lang='ru'):
+    if 'welcome.mp3' in os.listdir():
+        os.remove('welcome.mp3')
     myobj = gTTS(text=text, lang=lang)
     myobj.save("welcome.mp3")
     playsound('welcome.mp3')
