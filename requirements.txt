@@ -1,0 +1,12 @@
+keyboard
+gtts
+playsound
+serial
+youtube-search-python
+pyaudio
+pytelegrambotapi
+speechrecognition
+googlesearch-python
+beautifulsoup4
+urllib3
+urllib
