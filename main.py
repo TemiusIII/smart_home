@@ -28,10 +28,17 @@ name = 'Саша'
 said_name = False
 name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем', 'что мы']
 
+jokes = ["сидит чукча, ругает жену стуча кулаком по столу. Жена спрашиает: кто в дверь стучит, пойду открою. Чукча кричит: СТОЙ, САМ ОТКРОЮ!!!",
+         "Будит как-то мама Гитлера, а он отмахиваеться. Мне ко второй",
+         "Каким будет суп: рыбным или мясным, если сварить русалку?",
+         "Знаете что будет если все люди встанут по экватору в цепочку? Половина утонет",
+         "Штирлиц всю ночь топил камин, на утро камин утонул",
+         "Бабушка переходила дорогу не на тот свет, а попала на тот",]
+
 
 def urtts(text, lang='ru'):
     if 'welcome.mp3' in os.listdir():
-        os.remove('../../MineIsTop/welcome.mp3')
+        os.remove('/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/welcome.mp3')
     myobj = gTTS(text=text, lang=lang)
     myobj.save("welcome.mp3")
     playsound('welcome.mp3')
@@ -307,6 +314,18 @@ while 1:
                         if '*' in str(text):
                             urtts("не надо пожалуйста говорить плохие слова")
                             text = ''
+                        if 'алиса' in str(text) and "сири" in str(text):
+                            urtts("У них меньше чем у меня приемуществ, и я единственный мальчик")
+                        if 'алиса' in str(text) and not "сири" in str(text) or "сири" in str(text) and not 'алиса' in str(text):
+                            urtts("У нее меньше чем у меня приемуществ, и я единственный мальчик")
+                        if 'сказ' in text[i] or 'скаж' in text[i]:
+                            if 'шутк' in text[i+1]:
+                                print(1)
+                                a = random.randint(0, len(jokes)-1)
+                                urtts(jokes[a])
+                                text = ''
+                       # if "путин" == text[i]:
+                            #text[i+1] ==
                         if text[i] == 'что' or text[i] == 'кто':
                             if text[i + 1] == 'такое' or text[i + 1] == 'такая' or text[i + 1] == 'такой':
                                 if len(text[i + 1:]) > 2:
@@ -410,5 +429,3 @@ while 1:
 
         except:
             pass
-
-
