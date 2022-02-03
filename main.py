@@ -6,6 +6,7 @@ import threading
 import webbrowser
 import keyboard
 import pyautogui
+from PIL import Image
 from googlesearch import search
 from gtts import gTTS
 import os
@@ -20,6 +21,7 @@ from bs4 import BeautifulSoup
 import requests
 import osascript
 import urllib.parse
+import urllib.request
 import telebot
 
 bot = telebot.TeleBot("2022609617:AAERjqknUxED8jUks-Xuy0akUuYo0RkDX6o")
@@ -33,7 +35,7 @@ jokes = ["сидит чукча, ругает жену стуча кулаком
          "Каким будет суп: рыбным или мясным, если сварить русалку?",
          "Знаете что будет если все люди встанут по экватору в цепочку? Половина утонет",
          "Штирлиц всю ночь топил камин, на утро камин утонул",
-         "Бабушка переходила дорогу не на тот свет, а попала на тот",]
+         "Бабушка переходила дорогу не на тот свет, а попала на тот"]
 
 
 def urtts(text, lang='ru'):
@@ -199,7 +201,7 @@ while 1:
                     if "спокойной ночи" in text:
                         urtts("Сладких снов!")
                         text = ''
-                    if "пока" in text:
+                    if "'пока'" in str(text):
                         time_now = str(datetime.datetime.now().time()).split(".")[0]
                         if int(time_now.split(':')[0]) >= 22:
                             urtts("СПАТЬ ИДИ!")
@@ -338,7 +340,17 @@ while 1:
                                         find_text = soup.find('ol').get_text()
                                         urtts(str(find_text.split('◆')[0]))
                                     except:
-                                        urtts('не знаю, но скоро узнАю')
+                                        try:
+                                            asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']", '')
+                                            link_of_srch = search(asking + ' википедия', num_results=0)
+                                            html_text = requests.get(link_of_srch[0]).text
+                                            soop = BeautifulSoup(html_text, 'html.parser')
+                                            info = soop.find('p').get_text().split('.')[0]
+                                            urtts(info[:info.find('(') - 1] + info[info.find(')') + 1:])
+                                        except:
+                                            urtts('не знаю, но скоро узнАю')
+                                    asking = asking.replace('_', '+')
+
                                 else:
                                     try:
                                         asking = text[i + 2]
@@ -350,6 +362,120 @@ while 1:
                                         urtts('не понял, о чём вы хотели спросить')
                                     except AttributeError:
                                         urtts('не знаю, но скоро узнАю')
+                                    asking = asking.replace('_', '+')
+                        if "покажи" == text[i]:
+                            if len(text[i:])>1:
+                                try:
+                                    if text[i+1] == 'что':
+                                        if text[i+2] == "такое":
+                                            httml = requests.get(
+                                                f'https://www.google.com/search?q={urllib.parse.quote(text[i+3:])}&source=lnms&tbm=isch&sa=X').text
+                                            print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+3:])}&source=lnms&tbm=isch&sa=X')
+                                            sp = BeautifulSoup(httml, 'html.parser')
+                                            plz_find = sp.find_all('img', {'scr': ''})
+                                            img_url = str(find_text[1]).split('"')[5]
+                                            urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                            im = Image.open(
+                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
+                                            im.show()
+                                            img_url = str(find_text[2]).split('"')[5]
+                                            urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                            im = Image.open(
+                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                            im.show()
+                                            img_url = str(find_text[3]).split('"')[5]
+                                            urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                            im = Image.open(
+                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                            im.show()
+                                            urtts('вот')
+                                        else:
+                                            httml = requests.get(
+                                                f'https://www.google.com/search?q={urllib.parse.quote(text[i+2:])}&source=lnms&tbm=isch&sa=X').text
+                                            print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+2:])}&source=lnms&tbm=isch&sa=X')
+                                            sp = BeautifulSoup(httml, 'html.parser')
+                                            plz_find = sp.find_all('img', {'scr': ''})
+                                            img_url = str(find_text[1]).split('"')[5]
+                                            urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                            im = Image.open(
+                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
+                                            im.show()
+                                            img_url = str(find_text[2]).split('"')[5]
+                                            urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                            im = Image.open(
+                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                            im.show()
+                                            img_url = str(find_text[3]).split('"')[5]
+                                            urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                            im = Image.open(
+                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                            im.show()
+                                            urtts('вот')
+                                    else:
+                                        httml = requests.get(
+                                            f'https://www.google.com/search?q={urllib.parse.quote(text[i+1:])}&source=lnms&tbm=isch&sa=X').text
+                                        print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+1:])}&source=lnms&tbm=isch&sa=X')
+                                        print(3)
+                                        sp = BeautifulSoup(httml, 'html.parser')
+                                        plz_find = sp.find_all('img', {'scr': ''})
+                                        img_url = str(find_text[1]).split('"')[5]
+                                        urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                        im = Image.open(
+                                            "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
+                                        im.show()
+                                        img_url = str(find_text[2]).split('"')[5]
+                                        urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                        im = Image.open(
+                                            "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                        im.show()
+                                        img_url = str(find_text[3]).split('"')[5]
+                                        urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                        im = Image.open(
+                                            "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                        im.show()
+                                        urtts('вот')
+                                except:
+                                    pass
+                            else:
+                                try:
+                                    httml = requests.get(
+                                        f'https://www.google.com/search?q={urllib.parse.quote(asking)}&source=lnms&tbm=isch&sa=X').text
+                                    sp = BeautifulSoup(httml, 'html.parser')
+                                    plz_find = sp.find_all('img', {'scr': ''})
+                                    img_url = str(find_text[1]).split('"')[5]
+                                    urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                    im = Image.open(
+                                        "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
+                                    im.show()
+                                    img_url = str(find_text[2]).split('"')[5]
+                                    urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                    im = Image.open(
+                                        "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                    im.show()
+                                    img_url = str(find_text[3]).split('"')[5]
+                                    urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                    im = Image.open(
+                                        "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                    im.show()
+                                    urtts('вот')
+                                except:
+                                    urtts("а что показать?")
+                                    audio_to_show = r.record(source, duration=3)
+                                    text_to_show = r.recognize_google(audio_to_show, language='ru-ru')
+                                    text_to_show = str(text_to_show).replace("['", '').replace("', '", '+').replace(
+                                        "']", '')
+                                    text_to_show = urllib.parse.quote(text_to_show)
+                                    html = requests.get(
+                                        f'https://www.google.com/search?q={text_to_show}&source=lnms&tbm=isch&sa=X').text
+                                    soup = BeautifulSoup(html, 'html.parser')
+                                    find_text = soup.find_all('img', {'scr': ''})
+                                    img_url = str(find_text[1]).split('"')[5]
+                                    urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                    im = Image.open(
+                                        "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
+                                    im.show()
+                                    urtts('вот')
+                            text = ''
                         if text[i] == 'скажи':
                             if text[i + 1] != 'что':
                                 urtts(' '.join(text[i + 1:]).replace("ты", 'я'))
