@@ -185,16 +185,19 @@ while 1:
                             urtts("обращайтесь")
                         text = ''
                     if 'привет' in text or 'здравствуй' in text:
-                        a = random.randint(1, 4)
-                        if a == 1:
-                            urtts("привет " + str(name))
-                        if a == 2:
-                            urtts("здраствуй " + str(name))
-                        if a == 3:
-                            urtts("приветствую " + str(name))
-                        if a == 4:
-                            urtts("И тебе того-же!")
-                        text = ''
+                        for tems_name in name_list:
+                            for word in text:
+                                if word == tems_name:
+                                    a = random.randint(1, 4)
+                                    if a == 1:
+                                        urtts("привет " + str(name))
+                                    if a == 2:
+                                        urtts("здраствуй " + str(name))
+                                    if a == 3:
+                                        urtts("приветствую " + str(name))
+                                    if a == 4:
+                                        urtts("И тебе того-же!")
+                                    text = ''
                     if "тупой" in text or "пепега" in text or "дебил" in text:
                         urtts("но не такой тупой как ты!, " + name)
                         text = ''
@@ -339,14 +342,16 @@ while 1:
                                         soup = BeautifulSoup(html, 'html.parser')
                                         find_text = soup.find('ol').get_text()
                                         urtts(str(find_text.split('◆')[0]))
+                                        print(str(find_text.split('◆')[0]))
                                     except:
                                         try:
                                             asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']", '')
                                             link_of_srch = search(asking + ' википедия', num_results=0)
                                             html_text = requests.get(link_of_srch[0]).text
                                             soop = BeautifulSoup(html_text, 'html.parser')
-                                            info = soop.find('p').get_text().split('.')[0]
+                                            info = soop.find('p').get_text()
                                             urtts(info[:info.find('(') - 1] + info[info.find(')') + 1:])
+                                            print(info[:info.find('(') - 1] + info[info.find(')') + 1:])
                                         except:
                                             urtts('не знаю, но скоро узнАю')
                                     asking = asking.replace('_', '+')
