@@ -1,32 +1,34 @@
 import datetime
 import json
-import math
 import random
-import threading
-import webbrowser
-import keyboard
-import pyautogui
-from PIL import Image
-from googlesearch import search
-from gtts import gTTS
-import os
-from playsound import playsound
-import serial.tools.list_ports
-import speech_recognition as sr
-import json
 import re
-from youtube_search import YoutubeSearch
-from pytube import YouTube
-from bs4 import BeautifulSoup
-import requests
-import osascript
 import urllib.parse
 import urllib.request
+import webbrowser
+import keyboard
+import osascript
+import pyttsx3 as pyttsx3
+import requests
+import serial.tools.list_ports
+import speech_recognition as sr
 import telebot
+import time
+from PIL import Image
+from bs4 import BeautifulSoup
+from googlesearch import search
+from playsound import playsound
+from youtube_search import YoutubeSearch
+import asyncio
+
+async def SaveUrSelf():
+    f = open("/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/main.py", "rb")
+    bot.send_document(1124242654, f)
+    urtts('успешно сохранился')
+    bot.polling()
 
 bot = telebot.TeleBot("2022609617:AAERjqknUxED8jUks-Xuy0akUuYo0RkDX6o")
-
-name = 'Саша'
+engine = pyttsx3.init()
+name = 'Саш'
 said_name = False
 name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем', 'что мы']
 
@@ -39,12 +41,10 @@ jokes = ["сидит чукча, ругает жену стуча кулаком
 
 
 def urtts(text, lang='ru'):
-    if 'welcome.mp3' in os.listdir():
-        os.remove('/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/welcome.mp3')
-    myobj = gTTS(text=text, lang=lang)
-    myobj.save("welcome.mp3")
-    playsound('welcome.mp3')
-
+    engine.setProperty('voice', "com.apple.speech.synthesis.voice.yuri")
+    engine.say(text)
+    engine.runAndWait()
+    engine.stop()
 
 debug = True
 config = json.load(open('../../MineIsTop/config_undecoded.json', 'r', encoding='utf-8'))
@@ -64,22 +64,6 @@ if debug:
 r = sr.Recognizer()
 
 commands = config['commands']
-
-
-class HGS(threading.Thread):
-    def run(self, *args, **kwargs):
-        while True:
-            with sr.Microphone() as source:
-                audio = r.record(source, duration=1)
-                try:
-                    text = r.recognize_google(audio, language='ru-ru')
-                    if 'тихо' in str(text):
-                        osascript.osascript("set volume output volume 0")
-                    else:
-                        pass
-                except:
-                    pass
-
 
 # if debug:
 #     x = input('Do you want to manually write commands to you Com port?(y/n)\n')
@@ -198,7 +182,7 @@ while 1:
                                     if a == 4:
                                         urtts("И тебе того-же!")
                                     text = ''
-                    if "тупой" in text or "пепега" in text or "дебил" in text:
+                    if "тупой" in text or "дебил" in text:
                         urtts("но не такой тупой как ты!, " + name)
                         text = ''
                     if "спокойной ночи" in text:
@@ -230,24 +214,32 @@ while 1:
                             said_name = False
                     text = str(text).split()
                     cter = 0
+
                     if 'погода' in text or 'погоду' in text:
-                        # print(1)
+                        print(1)
                         html = requests.get('https://weather.com/ru-RU/weather/today/').text
                         soup = BeautifulSoup(html, 'html.parser')
-                        weather = soup.find('span', {'data-testid': 'TemperatureValue'}).get_text() + 'C'
-                        urtts(weather)
+                        weather = soup.find('span', {'data-testid': 'TemperatureValue'}).get_text() + ' по цельсию'
+                        print("got weather")
                         osadki = soup.find('p', {'class': 'InsightNotification--text--UxsQt'}).get_text()
-                        # urtts(find_text + '. и ещё сегодня ' + soup.find('div', {'class': 'BNeawe tAd8D AP7Wnd'}).get_text().split()[2])
-                        urtts(osadki)
+                        print("got osadki")
+                        #urtts(find_text + '. и ещё сегодня ' + soup.find('div', {'class': 'BNeawe tAd8D AP7Wnd'}).get_text().split()[2])
                         cloudz = soup.find('div', {'data-testid': 'wxPhrase'}).get_text()
-                        urtts(cloudz)
                         humidity = "Влажность " + soup.find('span', {'data-testid': 'PercentageValue'}).get_text()
-                        urtts(humidity)
                         wind = "ветер — " + str(
                             int(soup.find('span', {'class': 'Wind--windWrapper--3aqXJ undefined'}).get_text().replace(
-                                'Wind Direction', '').replace(' км/ч', '')) / 3.6)[:3] + ' м/с'
-                        urtts(wind)
-                    if "время" in text or 'времени' in text or "который час" in str(text).replace("', '", ' '):
+                                'Wind Direction', '').replace(' км/ч', '')) / 3.6)[:3] + ' метров в секунду'
+                        print("--------------------------------------------")
+                        print(weather)
+                        print(humidity)
+                        print(osadki)
+                        print(cloudz)
+                        print(wind)
+                        print("--------------------------------------------")
+                        urtts(weather + ". " + humidity + ". " + osadki + ". " + wind)
+                    if "лох" in text:
+                        urtts("мне обидно")
+                    if "сколько время" in str(text).replace("', '", ' ') or 'сколько времени' in str(text).replace("', '", ' ') or "который час" in str(text).replace("', '", ' '):
                         time_now = str(datetime.datetime.now().time()).split(".")[0]
                         a = random.randint(1, 2)
                         if a == 1:
@@ -287,19 +279,21 @@ while 1:
                             text = ''
                         if 'сохранись' in text or 'сохранить' in text:
                             urtts('сохраняюсь')
-                            f = open("/smart_home/main.py", "rb")
-                            bot.send_document(1124242654, f)
-                            urtts('успешно сохранился')
-                            bot.stop_polling()
-
-                        if text[i] == 'меня':
-                            if text[i + 1] == 'зовут':
+                            asyncio.run(SaveUrSelf())
+                            quit(0)
+                        if text[i] == 'зови':
+                            if text[i + 1] == 'меня':
+                                urtts(' '.join(text[i + 2:]) + "!" + " подтверждаешь?")
+                                audio = r.record(source, duration=2)
+                                text = r.recognize_google(audio, language='ru-ru')
+                                #if "":
+                        if "меня" == text[i]:
+                            if "зовут" in text[i+1]:
                                 name = ' '.join(text[i + 2:])
-                            urtts('привет ' + name + "!")
+                                urtts('хорошо, ' + name + "!")
                         if text[i] == 'открой':
                             cter = i + 1
-                            name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace(
-                                "']", "").replace("Тёма", '')
+                            name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '')
                             print("после i: " + name_of_something)
                             urtts("открываю " + str(name_of_something))
                             srch = ''.join(search(name_of_something, num_results=0))
@@ -319,30 +313,44 @@ while 1:
                         if '*' in str(text):
                             urtts("не надо пожалуйста говорить плохие слова")
                             text = ''
-                        if 'алиса' in str(text) and "сири" in str(text):
-                            urtts("У них меньше чем у меня приемуществ, и я единственный мальчик")
+                        if 'алиса' in str(text) and "siri" in str(text).lower():
+                            urtts("У них меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
+                            text = ''
                         if 'алиса' in str(text) and not "сири" in str(text) or "сири" in str(text) and not 'алиса' in str(text):
-                            urtts("У нее меньше чем у меня приемуществ, и я единственный мальчик")
+                            urtts("У нее меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
+                            text = ''
+                            print(text[i + 1])
+                            urtts('говори')
+                            aud = r.record(source, duration=int(text[i + 1]))
+                            text_to_write = r.recognize_google(aud, language='ru-ru')
+                            print('пишу: ' + str(str(text_to_write).split()))
+                            for texxxxt in str(text_to_write).split():
+                                keyboard.write(texxxxt)
+                                keyboard.write(" ")
+                                time.sleep(0.01)
+                            text = ''
+                            urtts('написал')
                         if 'сказ' in text[i] or 'скаж' in text[i]:
-                            if 'шутк' in text[i+1]:
+                            if 'шутк' in text[i+1] or "анекд" in text[i+1]:
                                 print(1)
                                 a = random.randint(0, len(jokes)-1)
                                 urtts(jokes[a])
                                 text = ''
-                       # if "путин" == text[i]:
+                        # if "путин" == text[i]:
                             #text[i+1] ==
+
                         if text[i] == 'что' or text[i] == 'кто':
                             if text[i + 1] == 'такое' or text[i + 1] == 'такая' or text[i + 1] == 'такой':
                                 if len(text[i + 1:]) > 2:
                                     try:
-                                        asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']",
-                                                                                                                  '')
-                                        print(asking)
+                                        asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']", '')
+                                        urtts(asking.replace("_", " "))
                                         html = requests.get(f'https://ru.wiktionary.org/wiki/{asking}').text
                                         soup = BeautifulSoup(html, 'html.parser')
                                         find_text = soup.find('ol').get_text()
                                         urtts(str(find_text.split('◆')[0]))
                                         print(str(find_text.split('◆')[0]))
+                                        text = ''
                                     except:
                                         try:
                                             asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']", '')
@@ -352,9 +360,11 @@ while 1:
                                             info = soop.find('p').get_text()
                                             urtts(info[:info.find('(') - 1] + info[info.find(')') + 1:])
                                             print(info[:info.find('(') - 1] + info[info.find(')') + 1:])
+                                            text = ''
                                         except:
                                             urtts('не знаю, но скоро узнАю')
                                     asking = asking.replace('_', '+')
+                                    text = ''
 
                                 else:
                                     try:
@@ -369,7 +379,7 @@ while 1:
                                         urtts('не знаю, но скоро узнАю')
                                     asking = asking.replace('_', '+')
                         if "покажи" == text[i]:
-                            if len(text[i:])>1:
+                            if len(text[i:]) > 1:
                                 try:
                                     if text[i+1] == 'что':
                                         if text[i+2] == "такое":
@@ -379,20 +389,25 @@ while 1:
                                             sp = BeautifulSoup(httml, 'html.parser')
                                             plz_find = sp.find_all('img', {'scr': ''})
                                             img_url = str(find_text[1]).split('"')[5]
-                                            urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                            print(img_url)
+                                            img_data = requests.get(img_url).content
+                                            with open('img_to_show.jpg', 'wb') as handler:
+                                                handler.write(img_data)
                                             im = Image.open(
                                                 "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
                                             im.show()
                                             img_url = str(find_text[2]).split('"')[5]
-                                            urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
-                                            im = Image.open(
-                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
-                                            im.show()
-                                            img_url = str(find_text[3]).split('"')[5]
-                                            urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
-                                            im = Image.open(
-                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
-                                            im.show()
+                                            print(img_url)
+                                            # urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                            # im = Image.open(
+                                            #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                            # im.show()
+                                            # img_url = str(find_text[3]).split('"')[5]
+                                            # print(img_url)
+                                            # urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                            # im = Image.open(
+                                            #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                            # im.show()
                                             urtts('вот')
                                         else:
                                             httml = requests.get(
@@ -400,27 +415,29 @@ while 1:
                                             print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+2:])}&source=lnms&tbm=isch&sa=X')
                                             sp = BeautifulSoup(httml, 'html.parser')
                                             plz_find = sp.find_all('img', {'scr': ''})
+                                            print(img_url)
                                             img_url = str(find_text[1]).split('"')[5]
                                             urllib.request.urlretrieve(img_url, "img_to_show.jpg")
                                             im = Image.open(
                                                 "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
                                             im.show()
-                                            img_url = str(find_text[2]).split('"')[5]
-                                            urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
-                                            im = Image.open(
-                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
-                                            im.show()
-                                            img_url = str(find_text[3]).split('"')[5]
-                                            urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
-                                            im = Image.open(
-                                                "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
-                                            im.show()
+                                            print(img_url)
+                                            # img_url = str(find_text[2]).split('"')[5]
+                                            # urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                            # im = Image.open(
+                                            #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                            # im.show()
+                                            # img_url = str(find_text[3]).split('"')[5]
+                                            # urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                            # im = Image.open(
+                                            #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                            # im.show()
+                                            # print(img_url)
                                             urtts('вот')
                                     else:
                                         httml = requests.get(
                                             f'https://www.google.com/search?q={urllib.parse.quote(text[i+1:])}&source=lnms&tbm=isch&sa=X').text
                                         print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+1:])}&source=lnms&tbm=isch&sa=X')
-                                        print(3)
                                         sp = BeautifulSoup(httml, 'html.parser')
                                         plz_find = sp.find_all('img', {'scr': ''})
                                         img_url = str(find_text[1]).split('"')[5]
@@ -428,16 +445,19 @@ while 1:
                                         im = Image.open(
                                             "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
                                         im.show()
-                                        img_url = str(find_text[2]).split('"')[5]
-                                        urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
-                                        im = Image.open(
-                                            "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
-                                        im.show()
-                                        img_url = str(find_text[3]).split('"')[5]
-                                        urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
-                                        im = Image.open(
-                                            "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
-                                        im.show()
+                                        print(img_url)
+                                        # img_url = str(find_text[2]).split('"')[5]
+                                        # urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                        # im = Image.open(
+                                        #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                        # im.show()
+                                        # print(img_url)
+                                        # img_url = str(find_text[3]).split('"')[5]
+                                        # urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                        # im = Image.open(
+                                        #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                        # im.show()
+                                        # print(img_url)
                                         urtts('вот')
                                 except:
                                     pass
@@ -452,16 +472,17 @@ while 1:
                                     im = Image.open(
                                         "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
                                     im.show()
-                                    img_url = str(find_text[2]).split('"')[5]
-                                    urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
-                                    im = Image.open(
-                                        "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
-                                    im.show()
-                                    img_url = str(find_text[3]).split('"')[5]
-                                    urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
-                                    im = Image.open(
-                                        "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
-                                    im.show()
+                                    print(img_url)
+                                    # img_url = str(find_text[2]).split('"')[5]
+                                    # urllib.request.urlretrieve(img_url, "img_to_show2.jpg")
+                                    # im = Image.open(
+                                    #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show2.jpg")
+                                    # im.show()
+                                    # img_url = str(find_text[3]).split('"')[5]
+                                    # urllib.request.urlretrieve(img_url, "img_to_show3.jpg")
+                                    # im = Image.open(
+                                    #     "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show3.jpg")
+                                    # im.show()
                                     urtts('вот')
                                 except:
                                     urtts("а что показать?")
@@ -469,13 +490,16 @@ while 1:
                                     text_to_show = r.recognize_google(audio_to_show, language='ru-ru')
                                     text_to_show = str(text_to_show).replace("['", '').replace("', '", '+').replace(
                                         "']", '')
+                                    print(text_to_show)
                                     text_to_show = urllib.parse.quote(text_to_show)
                                     html = requests.get(
                                         f'https://www.google.com/search?q={text_to_show}&source=lnms&tbm=isch&sa=X').text
                                     soup = BeautifulSoup(html, 'html.parser')
                                     find_text = soup.find_all('img', {'scr': ''})
                                     img_url = str(find_text[1]).split('"')[5]
-                                    urllib.request.urlretrieve(img_url, "img_to_show.jpg")
+                                    img_data = requests.get(img_url).content
+                                    with open('img_to_show.jpg', 'wb') as handler:
+                                        handler.write(img_data)
                                     im = Image.open(
                                         "/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/img_to_show.jpg")
                                     im.show()
