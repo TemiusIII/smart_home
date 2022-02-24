@@ -159,12 +159,15 @@ while 1:
                             else:
                                 osascript.osascript("set volume output volume " + str(result + 40))
                         text = ''
+                    if 'ура' in text:
+                        urtts("поздравляю")
+                        text = ''
                     if "спасибо" in text:
                         a = random.randint(1, 3)
                         if a == 1:
                             urtts("всегда пожалуйста")
                         if a == 2:
-                            urtts("нèзачто")
+                            urtts("незашто")
                         if a == 3:
                             urtts("обращайтесь")
                         text = ''
@@ -214,15 +217,12 @@ while 1:
                             said_name = False
                     text = str(text).split()
                     cter = 0
-
                     if 'погода' in text or 'погоду' in text:
-                        print(1)
                         html = requests.get('https://weather.com/ru-RU/weather/today/').text
                         soup = BeautifulSoup(html, 'html.parser')
                         weather = soup.find('span', {'data-testid': 'TemperatureValue'}).get_text() + ' по цельсию'
-                        print("got weather")
-                        osadki = soup.find('p', {'class': 'InsightNotification--text--UxsQt'}).get_text()
-                        print("got osadki")
+                        #osadki = soup.find('p', {'class': 'InsightNotification--text--UxsQt'}).get_text()
+                        #print(3)
                         #urtts(find_text + '. и ещё сегодня ' + soup.find('div', {'class': 'BNeawe tAd8D AP7Wnd'}).get_text().split()[2])
                         cloudz = soup.find('div', {'data-testid': 'wxPhrase'}).get_text()
                         humidity = "Влажность " + soup.find('span', {'data-testid': 'PercentageValue'}).get_text()
@@ -232,11 +232,11 @@ while 1:
                         print("--------------------------------------------")
                         print(weather)
                         print(humidity)
-                        print(osadki)
+                        #print(osadki)
                         print(cloudz)
                         print(wind)
                         print("--------------------------------------------")
-                        urtts(weather + ". " + humidity + ". " + osadki + ". " + wind)
+                        urtts(weather + ". " + humidity + ". Так-же cейчас " + cloudz + ". " + wind)
                     if "лох" in text:
                         urtts("мне обидно")
                     if "сколько время" in str(text).replace("', '", ' ') or 'сколько времени' in str(text).replace("', '", ' ') or "который час" in str(text).replace("', '", ' '):
@@ -319,6 +319,7 @@ while 1:
                         if 'алиса' in str(text) and not "сири" in str(text) or "сири" in str(text) and not 'алиса' in str(text):
                             urtts("У нее меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
                             text = ''
+                        if "диктую" in text[i]:
                             print(text[i + 1])
                             urtts('говори')
                             aud = r.record(source, duration=int(text[i + 1]))
