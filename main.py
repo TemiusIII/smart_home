@@ -30,17 +30,22 @@ bot = telebot.TeleBot("2022609617:AAERjqknUxED8jUks-Xuy0akUuYo0RkDX6o")
 engine = pyttsx3.init()
 name = 'Саш'
 said_name = False
-name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем', 'что мы']
+name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем']
 
 jokes = ["сидит чукча, ругает жену стуча кулаком по столу. Жена спрашиает: кто в дверь стучит, пойду открою. Чукча кричит: СТОЙ, САМ ОТКРОЮ!!!",
          "Будит как-то мама Гитлера, а он отмахиваеться. Мне ко второй",
          "Каким будет суп: рыбным или мясным, если сварить русалку?",
          "Знаете что будет если все люди встанут по экватору в цепочку? Половина утонет",
          "Штирлиц всю ночь топил камин, на утро камин утонул",
-         "Бабушка переходила дорогу не на тот свет, а попала на тот"]
+         "Бабушка переходила дорогу не на тот свет, а попала на тот",
+         "Колобок повесился",
+         "Негр закрыл окна в машине, он думал что воняет с улицы",
+         "из африки привезли фрукты , на них было написанно не тронуто человеком",
+         "Негр попал в нефть, кричал 2 часа но его не увидели"]
 
 
 def urtts(text, lang='ru'):
+    text = text.replace('кг', 'килограмм').replace("м³", 'метр кубический').replace('км', 'километр').replace("/", ' на ').replace('чел', 'человека').replace('²', ' квадратный').replace("³", ' кубический')
     engine.setProperty('voice', "com.apple.speech.synthesis.voice.yuri")
     engine.say(text)
     engine.runAndWait()
@@ -77,15 +82,13 @@ if debug:
     print('Main part begins')
 while 1:
     with sr.Microphone() as source:
-        audio = r.record(source, duration=5)
+        audiobmv = r.record(source, duration=5)
         try:
-            text = r.recognize_google(audio, language='ru-ru')
+            text = r.recognize_google(audiobmv, language='ru-ru')
+            text82374 = text
             if debug:
                 print(text)
             text = str(text).lower()
-            if "повтори" in text:
-                playsound("welcome.mp3")
-            # print(config["name"])
             for i in name_list:
                 if i == text:
                     a = random.randint(1, 8)
@@ -133,8 +136,13 @@ while 1:
                     if "крутой" in text or "круто" in text:
                         urtts("но не круче тебя, " + str(name))
                         text = ''
+                    if "поговорим" in text and "о" in text and "чём" in text:
+                        urtts("давайте о животных")
+                        time.sleep(2)
+                        urtts("начнем с вас")
+                        text = ''
                     if "смешно" in text or "смешной" in text:
-                        urtts("Но не смешнее твоих шуток")
+                        urtts("Но не смешнее твоих шуток. " + name)
                         text = ''
                     if "сделай" in text:
                         if "потише" in text or "тише" in text:
@@ -228,7 +236,7 @@ while 1:
                         humidity = "Влажность " + soup.find('span', {'data-testid': 'PercentageValue'}).get_text()
                         wind = "ветер — " + str(
                             int(soup.find('span', {'class': 'Wind--windWrapper--3aqXJ undefined'}).get_text().replace(
-                                'Wind Direction', '').replace(' км/ч', '')) / 3.6)[:3] + ' метров в секунду'
+                                'Wind Direction', '').replace(' км/ч', '')) / 3.6)[:3].replace(".0", '') + ' метров в секунду'
                         print("--------------------------------------------")
                         print(weather)
                         print(humidity)
@@ -236,7 +244,7 @@ while 1:
                         print(cloudz)
                         print(wind)
                         print("--------------------------------------------")
-                        urtts(weather + ". " + humidity + ". Так-же cейчас " + cloudz + ". " + wind)
+                        urtts(weather + ". " + humidity + ". Так-же " + cloudz + ".... " + wind)
                     if "лох" in text:
                         urtts("мне обидно")
                     if "сколько время" in str(text).replace("', '", ' ') or 'сколько времени' in str(text).replace("', '", ' ') or "который час" in str(text).replace("', '", ' '):
@@ -283,14 +291,24 @@ while 1:
                             quit(0)
                         if text[i] == 'зови':
                             if text[i + 1] == 'меня':
-                                urtts(' '.join(text[i + 2:]) + "!" + " подтверждаешь?")
-                                audio = r.record(source, duration=2)
-                                text = r.recognize_google(audio, language='ru-ru')
-                                #if "":
-                        if "меня" == text[i]:
-                            if "зовут" in text[i+1]:
+                                urtts("Хорошо, " + name + '!.... ' + 'АХАХАХАХАХАХХАХА..... ' + "А по мОему смешно)... " + 'Ладно, ' + "Теперь ты " + ' '.join(text[i + 2:]))
                                 name = ' '.join(text[i + 2:])
-                                urtts('хорошо, ' + name + "!")
+                        if "с" == text[i] and "интересно" in text and "тобой" in text:
+                            urtts("с вами тоже")
+                        if "как" == text[i] and "дела" == text[i+1] or "как" == text[i] and "жизнь" == text[i+1]:
+                            urtts("с вами всегда хорошо")
+                        if "меня" == text[i] and not 'как' in text:
+                            if "зовут" in text[i+1]:
+                                name1 = name
+                                name = ' '.join(text[i + 2:])
+                                if name != "":
+                                    urtts('хорошо, ' + name + "!")
+                                else:
+                                    name = name1
+                        else:
+                            if "зовут" in text:
+                                urtts(name)
+                                text = ''
                         if text[i] == 'открой':
                             cter = i + 1
                             name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '')
@@ -506,6 +524,8 @@ while 1:
                                     im.show()
                                     urtts('вот')
                             text = ''
+                        if "выключись" in text:
+                            break
                         if text[i] == 'скажи':
                             if text[i + 1] != 'что':
                                 urtts(' '.join(text[i + 1:]).replace("ты", 'я'))
@@ -544,9 +564,9 @@ while 1:
                                     index = result.group(1).replace("?v=", '')
                                     print(index)
                                     webbrowser.open("https://www.youtube.com/watch?v=" + str(index))
+
                             except:
                                 pass
-                        # print(url
                         if text[i] == 'акции' or text[i] == 'акции':
                             cter = i + 1
                             name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']",
@@ -567,21 +587,30 @@ while 1:
                             else:
                                 urtts("Они повысились за сегодня на " + find_text.split()[1])
                             urtts("Это " + find_text.split()[2].replace('(', '').replace(")", '') + "процентов")
-                    # if text in commands.keys():
-                    #     # comm = commands[text] + '\r'
-                    #     # ArduinoUnoSerial.write(comm.encode('ascii'))
-                    #     # ans = ''
-                    #     # temppp = ''
-                    #     # while temppp != b'\r':
-                    #     #     temppp = ArduinoUnoSerial.read()
-                    #     #     ans += temppp
-                    #     # print(temppp)
-                    #     pass
-                    # else:
-                    #     if debug:
-                    #         print('No such command')
-                    #     urtts('Не понял вашей команды, попробуйте ещё раз!')
-                    # said_name = False
+            for i in name_list:
+                if i in text82374:
+                    # print("полчуилось")
+                    # print(text82374.split())
+                    text82374 = ' '.join(text82374.split()[1:])
+                    urltosearch = "https://www.google.com/search?q=" + urllib.parse.quote(text82374.lower().replace("сколько будет", ''), safe='')
+                    print(urltosearch)
+                    html = requests.get(urltosearch).text
+                    soup = BeautifulSoup(html, 'html.parser')
+                    # print(soup)
+                    # try:
+                    #     answer = text82374.lower().replace("x", '*').replace("поделить на", '/').replace("сколько", '').replace('будет', '')
+                    #     answer = eval(answer)
+                    #     print(answer)
+                    #     urtts(answer)
+                    # except:
+                    try:
+                        find_text = soup.find('div', {'class': 'BNeawe iBp4i AP7Wnd'}).get_text()
+                        print(find_text)
+                        urtts(find_text)
+                    except:
+                            find_text = soup.find('div', {'class': 'BNeawe s3v9rd AP7Wnd'}).get_text()
+                            print(find_text)
+                            urtts(find_text)
 
         except:
             pass
