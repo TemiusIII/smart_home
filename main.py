@@ -622,8 +622,10 @@ while 1:
                             urtts("На данный момент, акции " +
                                   name + " " +
                                   find_text.split()[0])
+
                             if '-' in find_text.split()[1]:
                                 urtts("Они опустились за сегодня на " + find_text.split()[1].replace('-', ''))
+
                             else:
                                 urtts("Они повысились за сегодня на " + find_text.split()[1])
                             urtts("Это " + find_text.split()[2].replace('(', '').replace(")", '') + "процентов")
