@@ -56,8 +56,8 @@ def urtts(text, lang='ru'):
         'чел/', 'человека на').replace('²', ' квадратный').replace("³", ' кубический').replace("млн", 'миллионов')
     engine.setProperty('voice', "com.apple.speech.synthesis.voice.yuri")
     engine.say(text)
-    engine.startLoop(False)
-    engine.endLoop()
+    engine.runAndWait()
+    engine.stop()
     # my_thread = threading.Thread(
     #     target=say, args=(text,'ru',))
     # my_thread.start()
