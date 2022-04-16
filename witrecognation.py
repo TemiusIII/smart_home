@@ -5,10 +5,12 @@ from wit import Wit
 
 fs = 44100
 seconds = 10
-client = Wit('FWPSOGS7KEV4MO4G32CU5ROCLMERI5EM')
+client = Wit('XXXXXXXX')
+
 
 myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=1)
 sd.wait()
+print("приветолцвоагцрашщоцшщощ")
 write('output.wav', fs, myrecording)
 
 data, samplerate = sf.read('output.wav')

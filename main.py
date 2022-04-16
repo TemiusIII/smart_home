@@ -1,3 +1,5 @@
+import os
+import threading
 import datetime
 import json
 import random
@@ -49,12 +51,16 @@ jokes = ["сидит чукча, ругает жену стуча кулаком
 
 
 def urtts(text, lang='ru'):
-    text = text.replace('кг', 'килограмм').replace("м³", 'метр кубический').replace('км', 'километр').replace("/", ' на ').replace('чел/', 'человека на').replace('²', ' квадратный').replace("³", ' кубический').replace("млн", 'миллионов')
+    text = text.replace('кг', 'килограмм').replace("м³", 'метр кубический').replace('км', 'километр').replace("/",
+                                                                                                              ' на ').replace(
+        'чел/', 'человека на').replace('²', ' квадратный').replace("³", ' кубический').replace("млн", 'миллионов')
     engine.setProperty('voice', "com.apple.speech.synthesis.voice.yuri")
     engine.say(text)
-    engine.runAndWait()
-    engine.stop()
-
+    engine.startLoop(False)
+    engine.endLoop()
+    # my_thread = threading.Thread(
+    #     target=say, args=(text,'ru',))
+    # my_thread.start()
 debug = True
 # config = json.load(open('../../MineIsTop/config_undecoded.json', 'r', encoding='utf-8'))
 #
@@ -88,8 +94,10 @@ if debug:
     print('Main part begins')
 while 1:
     with sr.Microphone() as source:
-        audiobmv = r.record(source, duration=5)
+        r.adjust_for_ambient_noise(source, duration=0.1)
+        audiobmv = r.listen(source)
         try:
+
             text = r.recognize_google(audiobmv, language='ru-ru')
             text82374 = text
             if debug:
@@ -277,6 +285,13 @@ while 1:
                     #     if int(time_now.split(':')[0]) > 21:
                     #         urtts("ПОРА СПАТЬ!!!")
                     for i in range(len(text)):
+                        if "запусти" == text[i]:
+                            from deep_translator import GoogleTranslator
+                            to_translate = text[i + 1]
+                            translated = GoogleTranslator(source='auto', target='en').translate(to_translate)
+                            print(translated)
+                            os.system("open -a " + translated)
+
                         if text[i] == 'загугли':
                             new_text = []
                             for el in text:
@@ -288,6 +303,7 @@ while 1:
                             str_to_google = f'https://www.google.com/search?q=' + name_of_something
                             webbrowser.open(str_to_google)
                             command_performed = True
+
                         if text[i] == 'закрой':
                             print(1)
                             if 'вклад' in str(text):
@@ -340,6 +356,7 @@ while 1:
                             cter = i + 1
                             name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '')
                             print("после i: " + name_of_something)
+
                             urtts("открываю " + str(name_of_something))
                             srch = ''.join(search(name_of_something, num_results=0))
                             print(srch)
