@@ -7,6 +7,8 @@ import re
 import urllib.parse
 import urllib.request
 import webbrowser
+from statistics import mean
+from googlesearch import search
 import keyboard
 import osascript
 import pyautogui
@@ -25,6 +27,7 @@ from playsound import playsound
 from youtube_search import YoutubeSearch
 import asyncio
 
+
 def SaveUrSelf():
     f = open("/Users/alexsukhotckii/PycharmProjects/Artem/smart_home/main.py", "rb")
     bot.send_document(1124242654, f)
@@ -32,22 +35,24 @@ def SaveUrSelf():
     print("Успешно сохранился!")
     bot.polling(none_stop=False)
 
+
 bot = telebot.TeleBot("5292311634:AAHpunJZpF02Ze9BMoDNzTxWuSbnOqW0s6A")
 engine = pyttsx3.init()
-name = 'Саш'
+name = 'Сашa'
 said_name = False
 name_list = ['тёма', 'сема', 'тём', 'сем', 'сём', 'тем', 'тема', 'артём', 'чем']
 
-jokes = ["сидит чукча, ругает жену стуча кулаком по столу. Жена спрашиает: кто в дверь стучит, пойду открою. Чукча кричит: СТОЙ, САМ ОТКРОЮ!!!",
-         "Будит как-то мама Гитлера, а он отмахиваеться. Мне ко второй",
-         "Каким будет суп: рыбным или мясным, если сварить русалку?",
-         "Знаете что будет если все люди встанут по экватору в цепочку? Половина утонет",
-         "Штирлиц всю ночь топил камин, на утро камин утонул",
-         "Бабушка переходила дорогу не на тот свет, а попала на тот",
-         "Колобок повесился",
-         "Негр закрыл окна в машине, он думал что воняет с улицы",
-         "из африки привезли фрукты , на них было написанно не тронуто человеком",
-         "Негр попал в нефть, кричал 2 часа но его не увидели"]
+jokes = [
+    "сидит чукча, ругает жену стуча кулаком по столу. Жена спрашиает: кто в дверь стучит, пойду открою. Чукча кричит: СТОЙ, САМ ОТКРОЮ!!!",
+    "Будит как-то мама Гитлера, а он отмахиваеться. Мне ко второй",
+    "Каким будет суп: рыбным или мясным, если сварить русалку?",
+    "Знаете что будет если все люди встанут по экватору в цепочку? Половина утонет",
+    "Штирлиц всю ночь топил камин, на утро камин утонул",
+    "Бабушка переходила дорогу не на тот свет, а попала на тот",
+    "Колобок повесился",
+    "Негр закрыл окна в машине, он думал что воняет с улицы",
+    "из африки привезли фрукты , на них было написано не тронуто человеком",
+    "Негр попал в нефть, кричал 2 часа но его не увидели"]
 
 
 def urtts(text, lang='ru'):
@@ -61,6 +66,8 @@ def urtts(text, lang='ru'):
     # my_thread = threading.Thread(
     #     target=say, args=(text,'ru',))
     # my_thread.start()
+
+
 debug = True
 # config = json.load(open('../../MineIsTop/config_undecoded.json', 'r', encoding='utf-8'))
 #
@@ -94,7 +101,7 @@ if debug:
     print('Main part begins')
 while 1:
     with sr.Microphone() as source:
-        r.adjust_for_ambient_noise(source, duration=0.1)
+        r.adjust_for_ambient_noise(source, duration=0.001)
         audiobmv = r.listen(source)
         try:
 
@@ -187,10 +194,11 @@ while 1:
                                 osascript.osascript("set volume output volume " + str(result + 40))
                         text = ''
                         command_performed = True
-                    if 'ура' in text:
-                        urtts("поздравляю")
-                        text = ''
-                        command_performed = True
+
+                    if "следующий" in text:
+                        if "слайд" in text:
+                            keyboard.press("right")
+
                     if "спасибо" in text:
                         a = random.randint(1, 3)
                         if a == 1:
@@ -252,25 +260,14 @@ while 1:
                     text = str(text).split()
                     cter = 0
                     if 'погода' in text or 'погоду' in text:
-                        html = requests.get('https://weather.com/ru-RU/weather/today/').text
+                        urltosearch = "https://primpogoda.ru/weather/moskva/.today"
+                        html = requests.get(urltosearch).text
                         soup = BeautifulSoup(html, 'html.parser')
-                        weather = soup.find('span', {'data-testid': 'TemperatureValue'}).get_text() + ' по цельсию'
-                        #osadki = soup.find('p', {'class': 'InsightNotification--text--UxsQt'}).get_text()
-                        #print(3)
-                        #urtts(find_text + '. и ещё сегодня ' + soup.find('div', {'class': 'BNeawe tAd8D AP7Wnd'}).get_text().split()[2])
-                        cloudz = soup.find('div', {'data-testid': 'wxPhrase'}).get_text()
-                        humidity = "Влажность " + soup.find('span', {'data-testid': 'PercentageValue'}).get_text()
-                        wind = "ветер — " + str(
-                            int(soup.find('span', {'class': 'Wind--windWrapper--3aqXJ undefined'}).get_text().replace(
-                                'Wind Direction', '').replace(' км/ч', '')) / 3.6)[:3].replace(".0", '') + ' метров в секунду'
-                        print("--------------------------------------------")
-                        print(weather)
-                        print(humidity)
-                        #print(osadki)
-                        print(cloudz)
-                        print(wind)
-                        print("--------------------------------------------")
-                        urtts(weather + ". " + humidity + ". Так-же " + cloudz + ".... " + wind)
+                        find_text = "Вероятность осадков " + str(
+                            soup.find('tr', {'class': 'precipitation divider tip-right'}).get_text().replace("\n",
+                                                                                                             '').replace(
+                                "%", "").replace("Вероятность осадков ", '').split())
+                        print(find_text)
                         command_performed = True
                     if "лох" in text:
                         urtts("мне обидно")
@@ -282,11 +279,13 @@ while 1:
                     #         urtts("сейчас " + time_now)
                     #     elif a == 2:
                     #         urtts(time_now)
-                    #     if int(time_now.split(':')[0]) > 21:
+                    # if int(time_now.split(':')[0]) > 21:
                     #         urtts("ПОРА СПАТЬ!!!")
                     for i in range(len(text)):
                         if "запусти" == text[i]:
+                            command_performed = True
                             from deep_translator import GoogleTranslator
+
                             to_translate = text[i + 1]
                             translated = GoogleTranslator(source='auto', target='en').translate(to_translate)
                             print(translated)
@@ -329,32 +328,37 @@ while 1:
                             command_performed = True
                         if text[i] == 'зови':
                             if text[i + 1] == 'меня':
-                                urtts("Хорошо, " + name + '!.... ' + 'АХАХАХАХАХАХХАХА..... ' + "А по мОему смешно)... " + 'Ладно, ' + "Теперь ты " + ' '.join(text[i + 2:]))
+                                urtts(
+                                    "Хорошо, " + name + '!.... ' + 'АХАХАХАХАХАХХАХА..... ' + "А по мОему смешно)... " + 'Ладно, ' + "Теперь ты " + ' '.join(
+                                        text[i + 2:]))
                                 name = ' '.join(text[i + 2:])
                                 command_performed = True
                         if "с" == text[i] and "интересно" in text and "тобой" in text:
                             urtts("с вами тоже")
                             command_performed = True
-                        if "как" == text[i] and "дела" == text[i+1] or "как" == text[i] and "жизнь" == text[i+1]:
+                        if "как" == text[i] and "дела" == text[i + 1] or "как" == text[i] and "жизнь" == text[i + 1]:
                             urtts("с вами всегда хорошо")
                             command_performed = True
-                        if "меня" == text[i] and not 'как' in text:
-                            if "зовут" in text[i+1]:
-                                name1 = name
-                                name = ' '.join(text[i + 2:])
-                                if name != "":
-                                    urtts('хорошо, ' + name + "!")
-                                else:
-                                    name = name1
-                                command_performed = True
+                        # if "меня" == text[i] and not 'как' in text:
+                        #     if "зовут" in text[i+1]:
+                        #         name1 = name
+                        #         name = ' '.join(text[i + 2:])
+                        #         if name != "":
+                        #             urtts('хорошо, ' + name + "!")
+                        #         else:
+                        #             name = name1
+                        #         command_performed = True
                         else:
+                            # print(1)
                             if "зовут" in text and "как" in text and "мен" in text:
                                 urtts(name)
                                 text = ''
                                 command_performed = True
                         if text[i] == 'открой':
                             cter = i + 1
-                            name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']", "").replace("Тёма", '')
+                            name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']",
+                                                                                                                 "").replace(
+                                "Тёма", '')
                             print("после i: " + name_of_something)
 
                             urtts("открываю " + str(name_of_something))
@@ -380,11 +384,14 @@ while 1:
                             text = ''
                             command_performed = True
                         if 'алиса' in str(text) and "siri" in str(text).lower():
-                            urtts("У них меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
+                            urtts(
+                                "У них меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
                             text = ''
                             command_performed = True
-                        if 'алиса' in str(text) and not "сири" in str(text) or "сири" in str(text) and not 'алиса' in str(text):
-                            urtts("У нее меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
+                        if 'алиса' in str(text) and not "сири" in str(text) or "сири" in str(
+                                text) and not 'алиса' in str(text):
+                            urtts(
+                                "У нее меньше чем у меня приемуществ, и я единственный мальчик, максимально конфиденциальный")
                             text = ''
                             command_performed = True
                         if "диктую" in text[i]:
@@ -401,20 +408,21 @@ while 1:
                             urtts('написал')
                             command_performed = True
                         if 'сказ' in text[i] or 'скаж' in text[i]:
-                            if 'шутк' in text[i+1] or "анекд" in text[i+1]:
+                            if 'шутк' in text[i + 1] or "анекд" in text[i + 1]:
                                 print(1)
-                                a = random.randint(0, len(jokes)-1)
+                                a = random.randint(0, len(jokes) - 1)
                                 urtts(jokes[a])
                                 text = ''
                                 command_performed = True
                         # if "путин" == text[i]:
-                            #text[i+1] ==
+                        # text[i+1] ==
 
                         if text[i] == 'что' or text[i] == 'кто':
                             if text[i + 1] == 'такое' or text[i + 1] == 'такая' or text[i + 1] == 'такой':
                                 if len(text[i + 1:]) > 2:
                                     try:
-                                        asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']", '')
+                                        asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']",
+                                                                                                                  '')
                                         urtts(asking.replace("_", " "))
                                         html = requests.get(f'https://ru.wiktionary.org/wiki/{asking}').text
                                         soup = BeautifulSoup(html, 'html.parser')
@@ -424,7 +432,8 @@ while 1:
                                         text = ''
                                     except:
                                         try:
-                                            asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace("']", '')
+                                            asking = str(text[i + 2:]).replace("['", '').replace("', '", '_').replace(
+                                                "']", '')
                                             link_of_srch = search(asking + ' википедия', num_results=0)
                                             html_text = requests.get(link_of_srch[0]).text
                                             soop = BeautifulSoup(html_text, 'html.parser')
@@ -454,11 +463,12 @@ while 1:
                         if "покажи" == text[i]:
                             if len(text[i:]) > 1:
                                 try:
-                                    if text[i+1] == 'что':
-                                        if text[i+2] == "такое":
+                                    if text[i + 1] == 'что':
+                                        if text[i + 2] == "такое":
                                             httml = requests.get(
-                                                f'https://www.google.com/search?q={urllib.parse.quote(text[i+3:])}&source=lnms&tbm=isch&sa=X').text
-                                            print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+3:])}&source=lnms&tbm=isch&sa=X')
+                                                f'https://www.google.com/search?q={urllib.parse.quote(text[i + 3:])}&source=lnms&tbm=isch&sa=X').text
+                                            print(
+                                                'link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i + 3:])}&source=lnms&tbm=isch&sa=X')
                                             sp = BeautifulSoup(httml, 'html.parser')
                                             plz_find = sp.find_all('img', {'scr': ''})
                                             img_url = str(find_text[1]).split('"')[5]
@@ -484,8 +494,9 @@ while 1:
                                             urtts('вот')
                                         else:
                                             httml = requests.get(
-                                                f'https://www.google.com/search?q={urllib.parse.quote(text[i+2:])}&source=lnms&tbm=isch&sa=X').text
-                                            print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+2:])}&source=lnms&tbm=isch&sa=X')
+                                                f'https://www.google.com/search?q={urllib.parse.quote(text[i + 2:])}&source=lnms&tbm=isch&sa=X').text
+                                            print(
+                                                'link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i + 2:])}&source=lnms&tbm=isch&sa=X')
                                             sp = BeautifulSoup(httml, 'html.parser')
                                             plz_find = sp.find_all('img', {'scr': ''})
                                             print(img_url)
@@ -509,8 +520,9 @@ while 1:
                                             urtts('вот')
                                     else:
                                         httml = requests.get(
-                                            f'https://www.google.com/search?q={urllib.parse.quote(text[i+1:])}&source=lnms&tbm=isch&sa=X').text
-                                        print('link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i+1:])}&source=lnms&tbm=isch&sa=X')
+                                            f'https://www.google.com/search?q={urllib.parse.quote(text[i + 1:])}&source=lnms&tbm=isch&sa=X').text
+                                        print(
+                                            'link = ' + f'https://www.google.com/search?q={urllib.parse.quote(text[i + 1:])}&source=lnms&tbm=isch&sa=X')
                                         sp = BeautifulSoup(httml, 'html.parser')
                                         plz_find = sp.find_all('img', {'scr': ''})
                                         img_url = str(find_text[1]).split('"')[5]
@@ -624,36 +636,48 @@ while 1:
                                     command_performed = True
                             except:
                                 command_performed = True
-                        if text[i] == 'акции' or text[i] == 'акции':
-                            cter = i + 1
+                        if text[i] == 'акция' or text[i] == 'акции' or text[i] == 'акций':
                             name_of_something = str(text[i + 1:]).replace("['", '').replace("', '", ' ').replace("']",
                                                                                                                  "").replace(
                                 "Тёма", '').lower()
-                            print("после i: " + name_of_something)
-                            name = name_of_something
-                            html = requests.get(
-                                f"https://www.google.com/search?q=акции+{name}&ei=QCHtYZ6JG9KHwPAPnf2-4A4&ved=0ahUKEwieqYaFycf1AhXSAxAIHZ2-D-wQ4dUDCA4&uact=5&oq=акции+{name}&gs_lcp=Cgdnd3Mtd2l6EAMyCAgAEIAEELEDMgUIABCABDIECAAQQzIFCAAQgAQyBAgAEEMyCAgAEIAEEMkDMggIABCABBCxAzIFCAAQgAQyBQgAEIAEMgUIABCABDoHCAAQRxCwAzoKCAAQRxCwAxDJAzoHCAAQsAMQQzoKCAAQ5AIQsAMYADoSCC4QxwEQ0QMQyAMQsAMQQxgBOgwILhDIAxCwAxBDGAE6EgguEMcBEKMCEMgDELADEEMYAUoECEEYAEoECEYYAVCCAlinBGCcB2gBcAJ4AIABVYgBmQGSAQEymAEAoAEByAESwAEB2gEGCAAQARgJ2gEGCAEQARgI&sclient=gws-wiz").text
-                            soup = BeautifulSoup(html, 'html.parser')
-                            find_text = soup.find('div', {'class': 'BNeawe iBp4i AP7Wnd'}).get_text()
-                            print(find_text)
-                            urtts("На данный момент, акции " +
-                                  name + " " +
-                                  find_text.split()[0])
+                            url = str(search("акции " + name_of_something + " tinkoff.com", num_results=0)[0])
+                            print(url)
 
-                            if '-' in find_text.split()[1]:
-                                urtts("Они опустились за сегодня на " + find_text.split()[1].replace('-', ''))
+                            cter = i + 1
+
+                            # print("после i: " + name_of_something)
+                            name = name_of_something
+                            html_text = requests.get(url).text
+                            soup = BeautifulSoup(html_text, 'html.parser')
+                            find_text = soup.find('span', {'data-qa-type': 'uikit/money'}).get_text()
+                            if "$" in find_text.split()[1]:
+                                print(str(find_text.split()[0])[:-1] + " $")
+                                urtts("На данный момент, акции " +
+                                      name + " " +
+                                      str(find_text.split()[0])[:-1] + "Долларов")
 
                             else:
-                                urtts("Они повысились за сегодня на " + find_text.split()[1])
-                            urtts("Это " + find_text.split()[2].replace('(', '').replace(")", '') + "процентов")
+                                print(str(find_text.split()[0])[:-1] + " Pуб.")
+                                urtts("На данный момент, акции " +
+                                      name + " " +
+                                      str(find_text.split()[0])[:-1] + "Рублей")
+
                             command_performed = True
+                            # if '-' in find_text.split()[1]:
+                            #     urtts("Они опустились за сегодня на " + find_text.split()[1].replace('-', ''))
+                            #
+                            # else:
+                            #     urtts("Они повысились за сегодня на " + find_text.split()[1])
+                            # urtts("Это " + find_text.split()[2].replace('(', '').replace(")", '') + "процентов")
+                            # command_performed = True
             for i in name_list:
                 if i in text82374:
                     if not command_performed == True:
                         # print("полчуилось")
                         # print(text82374.split())
                         text82374 = ' '.join(text82374.split()[1:])
-                        urltosearch = "https://www.google.com/search?q=" + urllib.parse.quote(text82374.lower().replace("сколько будет", ''), safe='')
+                        urltosearch = "https://www.google.com/search?q=" + urllib.parse.quote(
+                            text82374.lower().replace("сколько будет", ''), safe='')
                         print(urltosearch)
                         html = requests.get(urltosearch).text
                         soup = BeautifulSoup(html, 'html.parser')
@@ -666,21 +690,19 @@ while 1:
                         # except:
                         try:
                             find_text = soup.find('div', {'class': 'BNeawe iBp4i AP7Wnd'}).get_text()
-                            if "Не найдено:" in find_text:
-                                print(100//0)
+                            if "Не найдено:" in find_text or "..." in find_text:
+                                urtts("Я не понял ваш запрос, повторите пожалуйста")
                             else:
                                 print(find_text)
                                 urtts(find_text)
                         except:
-                                find_text = soup.find('div', {'class': 'BNeawe s3v9rd AP7Wnd'}).get_text()
-                                if "Не найдено:" in find_text:
-                                    pass
-                                else:
-                                    print(find_text)
-                                    urtts(find_text)
+                            find_text = soup.find('div', {'class': 'BNeawe s3v9rd AP7Wnd'}).get_text()
+                            if "Не найдено:" in find_text or "..." in find_text:
+                                urtts("Я не понял ваш запрос, повторите пожалуйста")
+                            else:
+                                print(find_text)
+                                urtts(find_text)
             command_performed = False
-
-
         except Exception as e:
             command_performed = False
             if len(str(e)) > 2:

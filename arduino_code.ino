@@ -18,8 +18,8 @@ void loop() {
       Serial.println(full_data);
       command = full_data;
       full_data = "";
-     }
-    
+  }
+
   }
   if (command == "on")
     digitalWrite (LED, HIGH);
